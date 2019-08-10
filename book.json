@@ -1,6 +1,14 @@
 {
   "title": "OrientDB Manual",
   "description": "OrientDB Documentation",
+  "variables": {
+    "download_osx": "http://mkt.orientdb.com/CE-2217-OSX",
+    "download_linux": "http://mkt.orientdb.com/CE-2217-linux",
+    "download_windows": "http://mkt.orientdb.com/CE-2217-windows",
+    "download_multiOS": "http://mkt.orientdb.com/CE-2217-multiOS",
+    "lastGA": "2.2.17",
+    "currentVersion": "3.0.0-SNAPSHOT"
+  },
   "links": {
     "home": "http://orientdb.com",
     "about": "http://orientdb.com",
@@ -35,9 +43,9 @@
     "edit-link",
     "addcssjs",
     "search",
-	"page-toc"
-  ],
-  "pluginsConfig": {
+    "page-toc"
+  ],  
+  "pluginsConfig": {    
     "ga": {
       "token": "UA-28543690-2"
     },
@@ -50,7 +58,9 @@
       ]
     },
     "versions": {
-      "gitbookConfigURL": "http://orientdb.com/docs/book.json",
+      "gitbookConfigURL": "https://raw.githubusercontent.com/orientechnologies/orientdb-docs/master/book.json",
+			"type": "branches",
+      "includeFilepath": true,
       "options": [
         {
           "value": "http://orientdb.com/docs/1.7.8/",

@@ -16,8 +16,11 @@ Retrieves connected records crossing relationships.  This works with both the Do
 ```sql
 TRAVERSE <[class.]field>|*|any()|all()
          [FROM <target>]
-         [MAXDEPTH <number>]
-         WHILE <condition>
+         [
+           MAXDEPTH <number>
+           |
+           WHILE <condition> 
+         ]
          [LIMIT <max-records>]
          [STRATEGY <strategy>]
 ```
@@ -30,6 +33,8 @@ TRAVERSE <[class.]field>|*|any()|all()
 - **[`STRATEGY`](Java-Traverse.md#traversing-strategies)** Defines strategy for traversing the graph.
 
 >**NOTE**: The use of the [`WHERE`](SQL-Where.md) clause has been deprecated for this command.
+
+>**NOTE**: There is a difference between `MAXDEPTH N` and `WHILE DEPTH <= N`: the `MAXDEPTH` will evaluate exactly N levels, while the `WHILE` will evaluate N+1 levels and will discard the N+1th, so the `MAXDEPTH` in general has better performance.
 
 
 **Examples**
@@ -198,7 +203,7 @@ SELECT FROM <target> WHERE <field> TRAVERSE[(<minDeep> [,<maxDeep> [,<fields>]])
 - **`[<field>, <field>,...]`** Defines a list of fields to traverse.  Default is `any()`.
 - **`<conditions>`** Defines conditions to check on any traversed vertex.  
 
->For more information, see [SQL syntax](http://code.google.com/p/orient/wiki/SQLWhere).
+>For more information, see [SQL syntax](SQL-Where.md).
 
 **Examples**
 

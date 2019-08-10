@@ -31,8 +31,60 @@ If you have Docker installed in your computer, this is the easiest way to run Or
 
 Where instead of "root", type the root's password you want to use.
 
+## Use Ansible
 
-**Prerequisites**
+If you manage your servers through Ansible, you can use the following role : https://galaxy.ansible.com/migibert/orientdb which is highly customizable and allows you to deploy OrientDB as a standalone instance or multiple clusterized instances.
+
+For using it, you can follow these steps :
+
+**Install the role**
+```
+ansible-galaxy install migibert.orientdb
+```
+
+**Create an Ansible inventory** 
+
+Assuming you have one two servers with respective IPs fixed at 192.168.10.5 and 192.168.10.6, using ubuntu user.
+```
+[orientdb-servers]
+192.168.20.5 ansible_ssh_user=ubuntu
+192.168.20.6 ansible_ssh_user=ubuntu
+```
+
+**Create an Ansible playbook**
+
+In this example, we provision a two node cluster using multicast discovery mode. Please note that this playbook assumes java is already installed on the machine so you should have one step before that install Java 8 on the servers
+```
+- hosts: orientdb-servers
+  become: yes
+  vars:
+    orientdb_version: 2.0.5
+    orientdb_enable_distributed: true
+    orientdb_distributed:
+      hazelcast_network_port: 2434
+      hazelcast_group: orientdb
+      hazelcast_password: orientdb
+      multicast_enabled: True
+      multicast_group: 235.1.1.1
+      multicast_port: 2434
+      tcp_enabled: False
+      tcp_members: []
+    orientdb_users:
+      - name: root
+        password: root
+         tasks:
+  - apt:
+      name: openjdk-8-jdk
+      state: present
+  roles:
+  - role: orientdb-role
+```
+
+**Run the playbook**
+`ansible-playbook -i inventory playbook.yml`
+
+
+## Prerequisites
 
 Both editions of OrientDB run on any operating system that implements the Java Virtual machine (JVM).  Examples of these include:
 
@@ -46,28 +98,26 @@ Both editions of OrientDB run on any operating system that implements the Java V
 OrientDB requires [Java](http://www.java.com/en/download), version 1.7 or higher.
 
 
->**Note**: In OSGi containers, OrientDB uses a `ConcurrentLinkedHashMap` implementation provided by [concurrentlinkedhashmap](https://code.google.com/p/concurrentlinkedhashmap/) to create the LRU based cache. This library actively uses the sun.misc package which is usually not exposed as a system package. To overcome this limitation you should add property `org.osgi.framework.system.packages.extra` with value `sun.misc` to your list of framework properties.
+>**Note**: In OSGi containers, OrientDB uses a `ConcurrentLinkedHashMap` implementation provided by [concurrentlinkedhashmap](https://github.com/ben-manes/concurrentlinkedhashmap) to create the LRU based cache. This library actively uses the sun.misc package which is usually not exposed as a system package. To overcome this limitation you should add property `org.osgi.framework.system.packages.extra` with value `sun.misc` to your list of framework properties.
 >
->It may be as simple as passing an argument to the VM starting the platform:
+>It may be as simple as passing an argument to the VM starting the platform: 
 >
 >```sh
 >$ java -Dorg.osgi.framework.system.packages.extra=sun.misc
 >```
 
 
-### Binary Installation
+## Binary Installation
 
 OrientDB provides a pre-compiled binary package to install the database on your system.  Depending on your operating system, this is a tarred or zipped package that contains all the relevant files you need to run OrientDB. For desktop installations, go to [OrientDB Downloads](http://orientdb.com/download/) and select the package that best suits your system.
 
 On server installations, you can use the `wget` utility:
 
-```sh
-$ wget https://orientdb.com/download.php?file=orientdb-community-2.2.0.tar.gz
-```
+<pre><code class="lang-sh">$ wget {{ book.download_multiOS }} -O orientdb-community-{{book.lastGA}}.zip</code></pre>	
 
-Whether you use your web browser or `wget`, unzip or extract the downloaded file into a directory convenient for your use, (for example, `/opt/orientdb/` on Linux).  This creates a directory called `orientdb-community-2.2.0` with relevant files and scripts, which you will need to run OrientDB on your system.
+Whether you use your web browser or `wget`, unzip or extract the downloaded file into a directory convenient for your use, (for example, `/opt/orientdb/` on Linux).  This creates a directory called orientdb-community-{{book.lastGA}} with relevant files and scripts, which you will need to run OrientDB on your system.
 
-### Source Code Installation
+## Source Code Installation
 
 In addition to downloading the binary packages, you also have the option of compiling OrientDB from the Community Edition source code, available on GitHub.  This process requires that you install [Git](http://www.git-scm.com/) and [Apache Maven](https://maven.apache.org/) on your system.
 
@@ -95,41 +145,22 @@ As the time of writing this notes, the state of branches is:
 * 2.0.x: hot fix for next 2.0.x stable release (2.0.x-SNAPSHOT)
 * last tag on master is 2.2.0
 
-The build process installs all jars in the local maven repository and creates archives under the `distribution` module inside the `target` directory. At the time of writing, building from branch 2.1.x gave:
+The build process installs all jars in the local maven repository and creates archives under the `distribution` module inside the `target` directory. At the time of writing, building from branch 2.1.x gave: 
 ```sh
 $ls -l distribution/target/
 total 199920
     1088 26 Jan 09:57 archive-tmp
      102 26 Jan 09:57 databases
-     102 26 Jan 09:57 orientdb-community-3.0.0-SNAPSHOT.dir
-48814386 26 Jan 09:57 orientdb-community-3.0.0-SNAPSHOT.tar.gz
-53542231 26 Jan 09:58 orientdb-community-3.0.0-SNAPSHOT.zip
+     102 26 Jan 09:57 orientdb-community-2.2.1-SNAPSHOT.dir
+48814386 26 Jan 09:57 orientdb-community-2.2.1-SNAPSHOT.tar.gz
+53542231 26 Jan 09:58 orientdb-community-2.2.1-SNAPSHOT.zip
 $
 ```
-The directory `orientdb-community-3.0.0-SNAPSHOT.dir` contains the OrientDB distribution uncompressed.
+The directory `orientdb-community-2.2.1-SNAPSHOT.dir` contains the OrientDB distribution uncompressed.
 Take a look to [Contribute to OrientDB](Contribute-to-OrientDB.md) if you want to be involved.
 
-Each distribution package contains a sample database called *GratefulDeadConcerts*. It is possible to generate the database:
-```sh
-$ cd distribution/
-$ mvn  prepare-package
-[INFO] Scanning for projects...
-[INFO]
-[INFO] ------------------------------------------------------------------------
-[INFO] Building OrientDB Community Distribution ...
-...
-Importing GRAPHML database from ../graphdb/src/test/resources/graph-example-2.xml with options ()...
-Done: imported 809 vertices and 8049 edges
-Imported in 1141ms. Vertexes: 809
-```
 
-The database is created inside the target directory
-```sh
-$ ls target/databases/
-GratefulDeadConcerts/
-```
-
-#### Update Permissions
+### Update Permissions
 
 For Linux, Mac OS X and UNIX-based operating system, you need to change the permissions on  some of the files after compiling from source.
 
@@ -176,6 +207,7 @@ OrientDB for internal components like engines, operators, factories uses Java SP
 To learn more about how to install OrientDB on specific environments, please refer to the guides below:
 
 - [Install with Docker](Docker-Home.md)
+- [Install with Ansible](https://github.com/migibert/orientdb-role)
 - [Install on Linux Ubuntu](http://famvdploeg.com/blog/2013/01/setting-up-an-orientdb-server-on-ubuntu/)
 - [Install on JBoss AS](http://team.ops4j.org/wiki/display/ORIENT/Installation+on+JBoss+AS)
 - [Install on GlassFish](http://team.ops4j.org/wiki/display/ORIENT/Installation+on+GlassFish)

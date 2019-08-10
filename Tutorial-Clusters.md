@@ -38,7 +38,7 @@ Starting from v2.2, OrientDB automatically may create multiple clusters per each
 
 While the default strategy is that each class maps to one cluster for each CPU core available, a class can rely on fewer or more clusters. For instance, in a distributed server environment you can spawn records physically in multiple locations, thereby creating multiple clusters.
 
-One key feature about clusters is 'Cluster Selection'. This features specifies to which cluster any new recorded added will be added. Cluster Selection can be 'round robin', 'default', 'balanced', or 'local'.
+One key feature about clusters is 'Cluster Selection'. This features specifies to which cluster any new record will be added. Cluster Selection can be 'round robin', 'default', 'balanced', or 'local'.
 
 Suppose you have a class `Customer` that relies on two clusters:
 
@@ -70,12 +70,7 @@ Here, OrientDB only scans the `China_customers` cluster of the `Customer` class 
 
 ## Working with Clusters
 
-In OrientDB there are two types of clusters:
-
-- **Physical Cluster** (known as **local**) which is persistent because it writes directly to the file system
-- **Memory Cluster** where everything is volatile and will be lost on termination of the process or server if the database is remote
-
-For most cases, physical clusters are preferred because databases must be persistent.  OrientDB creates physical clusters by default.
+While running in HA mode, upon the creation of a new record (document, vertex, edge, etc.) the coordinator server automatically assigns the cluster among the list of local clusters for the current server. For more information look at [HA: Cluster Ownership](Distributed-Architecture.md#cluster-ownership).
 
 You may also find it beneficial to locate different clusters on different servers, physically separating where you store records in your database.  The advantages of this include:
 
@@ -83,9 +78,6 @@ You may also find it beneficial to locate different clusters on different server
 - **Indexes** With good partitioning, you can reduce or remove the use of indexes.
 - **Parallel Queries**: Queries can be run in parallel when made to data on multiple disks.
 - **Sharding**: You can shard large data-sets across multiple instances.
-
-
-
 
 ### Adding Clusters
 

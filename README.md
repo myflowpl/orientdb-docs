@@ -1,4 +1,10 @@
-#OrientDB Manual - version 3.0.x
+
+
+**THIS BRANCH IS DEPRECATED.  PLEASE SEE: http://orientdb.com/docs/last/**
+
+
+
+#OrientDB Manual - version {{book.currentVersion}}
 
 ![image](http://www.orientdb.com/images/orientdb_logo_mid.png)
 

@@ -16,21 +16,13 @@ For general information on the possible Neo4j to OrientDB migration strategies, 
 
 Please download and install OrientDB:
 
-```
-wget http://central.maven.org/maven2/com/orientechnologies/orientdb-community/VERSION/orientdb-community-VERSION.tar.gz
-
-tar xvf orientdb-community-VERSION.tar.gz
-```
+<pre><code class="lang-sh">$ wget {{ book.download_multiOS }} -O orientdb-community-{{book.lastGA}}.zip
+$ unzip orientdb-community-{{book.lastGA}}</code></pre>
 
 Download and install the _Neo4j to OrientDB Importer_:
 
-```
-wget http://central.maven.org/maven2/com/orientechnologies/orientdb-neo4j-importer/VERSION/orientdb-neo4j-importer-VERSION.tar.gz
-
-tar xvf orientdb-neo4j-importer-VERSION.tar.gz -C orientdb-community-VERSION --strip-components=1
-```
-
-where _VERSION_ is equal or higher 2.2.12.
+<pre><code class="lang-sh">$ wget http://central.maven.org/maven2/com/orientechnologies/orientdb-neo4j-importer/{{book.lastGA}}/orientdb-neo4j-importer-{{book.lastGA}}.tar.gz
+$ tar xfv orientdb-neo4j-importer-{{book.lastGA}}.tar.gz -C orientdb-community-{{book.lastGA}} --strip-components=1 </code></pre>
 
 For further information on the OrientDB's installation, please refer to this [section](Tutorial-Installation.md).
 
@@ -148,3 +140,17 @@ The following is a partial visualization of the _northwind_ database done with t
 ![](images/import_from_neo4j/northwind/northwind_graph_editor.PNG)
 
 As you can see from the _Limit_ field, the visualization is limited to 200 vertices.
+
+The following, instead, is the graph returned by the following [MATCH](SQL-Match.md) query (the query returns all nodes connected to the Order with `orderID` 10344):
+
+```sql
+MATCH {class: Order, where: (orderID = 10344)}--{as: n} RETURN $pathelements
+```
+
+![](images/import_from_neo4j/northwind/northwind_match_query.PNG)
+
+From Studio's [Schema Manager](Studio-Schema.md), you can check all imported Vertex Classes (node Labels in Neo4j), Edge Classes (Relationship Types in Neo4j), and Indexes:
+
+![](images/import_from_neo4j/northwind/northwind_schema_manager.PNG)
+
+`V` and `E` are special classes: they include all Vertices and all Edges.
